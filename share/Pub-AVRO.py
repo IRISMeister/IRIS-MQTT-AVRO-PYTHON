@@ -40,8 +40,14 @@ if __name__ == '__main__':
   client.loop_stop()
 
   # 送信側のMQTT Clientで、IRIS(受信側のMQTT Client)が全件取得したことを知る簡単な方法が無い。
-  res=util.wait('NotifyAVRO',wgw_host,wgw_port,data_count)
+  # $SYSTEM.Eventを使用して待ち合わせする。
+  # waittime(秒)を、対象件数(data_count)がINSERT完了し終わるまでにかかる想定時間より長く設定すること。
+  # あまり長く設定しすぎると、異常を検知するまでに時間がかかる。
+  waittime=60  
+  res=util.wait('NotifyAVRO',wgw_host,wgw_port,waittime)
   ret=res['ret']
+  if ret!=1:
+    print("Out of sync. May took more than "+str(waittime)+" seconds. Following result may be wrong.")
 
   json=util.measure(wgw_host,wgw_port)
   # IRIS側から得た結果を表示。Countは保存した件数、Diffは保存にかかった時間(ミリ秒)

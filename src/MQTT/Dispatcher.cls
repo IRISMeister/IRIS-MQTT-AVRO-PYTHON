@@ -19,6 +19,11 @@ ClassMethod Reset(type As %String = "avro", datacount As %Integer = 0) As %Statu
     try {
         k ^seq(type) 
         s ^seqtarget(type)=datacount
+
+        #; 全件ロード完了の待ち合わせのためのイベントをクリア。
+        if type="avro" {Do $SYSTEM.Event.Clear("NotifyAVRO")}
+        if type="json" {Do $SYSTEM.Event.Clear("NotifyJSON")}
+
         Set sql="DELETE FROM MQTT.SimpleClass"
         Set result=##class(%SQL.Statement).%ExecDirect(,sql)
         $$$ThrowSQLIfError(result.%SQLCODE,result.%Message)
@@ -52,23 +57,21 @@ ClassMethod Measure() As %Status
     return $$$OK
 }
 
-ClassMethod WaitOld(p1 As %Integer) As %Status
+ClassMethod Wait(event As %String = "NotifyAVRO", waittime As %Integer = 60) As %Status
 {
     set ret=0
-    if ($G(^seq)>=p1) { Set ret=1 }
-    w {"ret":(ret)}.%ToJSON(),!
-    Return $$$OK
-}
-
-ClassMethod Wait(event As %String = "NotifyAVRO", p1 As %Integer) As %Status
-{
-    set ret=0
-    Set result = $SYSTEM.Event.WaitMsg(event,600)
+    Set result = $SYSTEM.Event.WaitMsg(event,waittime)
     Set resultCode=$LG(result,1)
-    Set resultJson={}.%FromJSON($LG(result,2))
-    Do $SYSTEM.Event.Signal(resultJson.PID)
+    #; something bad happened
+    If resultCode<1 {
+        w {"ret":0}.%ToJSON(),!
+    }
+    Else {
+        Set resultJson={}.%FromJSON($LG(result,2))
+        Do $SYSTEM.Event.Signal(resultJson.PID)
+        w {"ret":(resultJson.ret)}.%ToJSON(),!
+    }
 
-    w {"ret":(resultJson.ret)}.%ToJSON(),!
     Return $$$OK
 }
 

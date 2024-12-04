@@ -24,7 +24,8 @@ Method OnProcessInput(pInput As EnsLib.MQTT.Message, pOutput As %RegisteredObjec
 			$$$LOGINFO("target count reached. Count:"_^seq("json"))
 			Set res = $SYSTEM.Event.Wait("",10) ; Wait acknowledgement
 			If res < 1 {
-				$$$LOGERROR("Something went wrong.")
+				Do $SYSTEM.Event.Clear("NotifyJSON")
+				$$$LOGERROR("Nobody was waiting.")
 			}
 		}
 	} Catch e {
@@ -37,7 +38,7 @@ Method OnProcessInput(pInput As EnsLib.MQTT.Message, pOutput As %RegisteredObjec
 Method Save(seq As %Numeric, topic As %String, avromsg As %RawString) As %Status [ Language = python ]
 {
 	import SaveJSON as s
-	
+
 	try:
 		s.saveFromString(seq,topic,avromsg)
 	except Exception as ex:
