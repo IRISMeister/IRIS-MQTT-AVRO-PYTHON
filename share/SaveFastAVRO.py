@@ -1,10 +1,7 @@
-import os
 import io
-#import avro.schema
-#import avro.io
 import json
-import fastavro
 import time
+import fastavro
 
 def init(datadir):
 	global schema
@@ -82,7 +79,8 @@ if __name__ == '__main__':
 		sys.path += ['c:\\intersystems\\iris\\lib\\python','c:\\intersystems\\iris\\mgr\\python',datadir]
 	elif pf == 'Linux':
 		datadir="/share/"
-		sys.path += ['/usr/irissys/lib/python/','/usr/irissys/mgr/python/',datadir]
+		# /usr/irissys/lib/python/ ... enables import iris
+		sys.path += ['/usr/irissys/lib/python/',datadir]
 
 	topic="/XGH/PYAVRO/"
 	init(datadir)

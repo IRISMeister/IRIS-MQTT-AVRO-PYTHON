@@ -13,7 +13,8 @@ RUN apt -y update \
  && apt clean
 
 USER irisowner
-#RUN pip install avro fastavro -t /usr/irissys/mgr/python
+COPY ./share/requirments.txt .
+RUN pip install -r requirments.txt
 
 COPY ./src ./src/
 
@@ -40,6 +41,6 @@ RUN sed -i 's/SM_Timeout=28800/SM_Timeout=28800\nSystem_Manager=*.*.*.*\nREGISTR
  && sed -i 's/Server_Response_Timeout=60/Server_Response_Timeout=600/' /usr/irissys/csp/bin/CSP.ini \
  && sed -i 's/Queued_Request_Timeout=60/Queued_Request_Timeout=600/' /usr/irissys/csp/bin/CSP.ini 
 
-# 埋め込みpythonで実行するpyをcopy。これが無いとsys.pathに含めてもエラーになる
-COPY share/Save*.py /usr/irissys/mgr/python/
-#COPY share/SimpleClass.avsc AVRO/
+# IRISの内部から埋め込みpythonでimportするpyにpathを通す。
+# 具体的には、Save*.pyをMQTT.BS.PYAVRO.cls,MQTT.BS.PYJSON.clsでimportしている。
+RUN echo /share > $(python3 -c 'import sys; print(sys.path)' | grep -o "[^']*site-packages")/myapp2.pth
