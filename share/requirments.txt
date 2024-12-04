@@ -1,0 +1,4 @@
+avro
+fastavro
+paho-mqtt
+requests

@@ -1,0 +1,17 @@
+{
+    "intersystems.servers": {
+        "iris-avro": {
+            "webServer": {
+                "scheme": "http",
+                "host": "127.0.0.1",
+                "port": 8882
+            },
+            "username": "_SYSTEM"
+        }
+    },
+    "objectscript.conn": {
+        "server": "iris-avro",
+        "ns": "AVRO",
+        "active": true
+    }
+}

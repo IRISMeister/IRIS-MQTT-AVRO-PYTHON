@@ -1,0 +1,9 @@
+{
+   "namespace" : "foo",
+   "type" : "record",
+   "name" : "bar",
+   "fields" :
+   [
+         { "name" : "myArray", "type" : { "type" : "array", "items" : "int" } }
+   ]
+}

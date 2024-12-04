@@ -1,0 +1,51 @@
+services:
+  iris:
+    depends_on:
+      - iris-init
+    hostname: iris
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8882:52773
+      - 8883:1972
+    environment:
+      - TZ=JST-9
+      - ISC_DATA_DIRECTORY=/iris-mgr/data
+      - ISC_CPF_MERGE_FILE=/home/irisowner/cpf/merge.cpf
+    volumes:
+      - ./share:/share 
+      - ./external-vol-mgr:/iris-mgr
+      - ./UserCPF:/home/irisowner/cpf
+
+  iris-init:
+    command: >
+      /bin/sh -c '
+      chown 51773:51773 /iris-mgr &&
+      chmod -R 777 /share
+      '
+    image: busybox
+    volumes:
+      - ./external-vol-mgr:/iris-mgr
+      - ./share:/share
+
+  mqttbroker:
+    image: eclipse-mosquitto
+    hostname: mqttbroker
+    restart: on-failure
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      - ./MQTTBroker/conf:/mosquitto/config
+
+#  mqttbroker:
+#    image: emqx
+#    hostname: mqttbroker
+#    restart: on-failure
+#    ports:
+#      - 1883:1883
+#      - 8083:8083
+#      - 8084:8084
+#      - 8883:8883
+#      - 18083:18083
