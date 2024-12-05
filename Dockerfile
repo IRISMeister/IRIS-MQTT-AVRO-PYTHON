@@ -1,15 +1,11 @@
-ARG IMAGE=containers.intersystems.com/intersystems/irishealth-community:2024.1
+ARG IMAGE=containers.intersystems.com/intersystems/iris-community:2024.1
 FROM $IMAGE
 
 USER root
 
 # Japanese language pack 
 RUN apt -y update \
- && DEBIAN_FRONTEND=noninteractive apt -y install language-pack-ja-base language-pack-ja
-
-# installing vim just for convenience
-RUN apt -y update \
- && DEBIAN_FRONTEND=noninteractive apt -y install build-essential vim mosquitto-clients \
+ && DEBIAN_FRONTEND=noninteractive apt -y install language-pack-ja-base language-pack-ja vim mosquitto-clients \
  && apt clean
 
 USER irisowner
@@ -41,6 +37,6 @@ RUN sed -i 's/SM_Timeout=28800/SM_Timeout=28800\nSystem_Manager=*.*.*.*\nREGISTR
  && sed -i 's/Server_Response_Timeout=60/Server_Response_Timeout=600/' /usr/irissys/csp/bin/CSP.ini \
  && sed -i 's/Queued_Request_Timeout=60/Queued_Request_Timeout=600/' /usr/irissys/csp/bin/CSP.ini 
 
-# IRISの内部から埋め込みpythonでimportするpyにpathを通す。
+# IRISの内部から埋め込みpythonでimportするユーザ作成のpyに対してpath(/share)を追加する。
 # 具体的には、Save*.pyをMQTT.BS.PYAVRO.cls,MQTT.BS.PYJSON.clsでimportしている。
 RUN echo /share > $(python3 -c 'import sys; print(sys.path)' | grep -o "[^']*site-packages")/myapp2.pth

@@ -2,6 +2,7 @@ from paho.mqtt import client as mqtt_client
 from time import sleep
 import argparse
 import PubUtil as util
+import pprint
 
 def on_publish(client, userdata, mid, reason_codes, properties):
   print("{0} ".format(mid), end=',')
@@ -23,7 +24,11 @@ if __name__ == '__main__':
   wgw_port=str(args.wgw_port)
 
   # IRISのテーブルを全件削除, 送信件数の通知
-  util.reset('avro',wgw_host,wgw_port,data_count)
+  res = util.reset('avro',wgw_host,wgw_port,data_count)
+  ret=res['ret']
+  if ret!=1:
+    print("Reset failed. Following result may be wrong. Error:"+res['msg'])
+    pprint.pprint(res['stack'].split(','))
 
   client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2,f'python_client',protocol=mqtt_client.MQTTv311)
   #client.on_publish = on_publish 
@@ -47,9 +52,18 @@ if __name__ == '__main__':
   res=util.wait('NotifyAVRO',wgw_host,wgw_port,waittime)
   ret=res['ret']
   if ret!=1:
-    print("Out of sync. May took more than "+str(waittime)+" seconds. Following result may be wrong.")
+    if 'msg' in res:
+      print("Out of sync. Error:"+res['msg']+" Following result may be wrong.")
+      pprint.pprint(res['stack'].split(','))
+    else:
+      print("May took more than "+str(waittime)+" seconds. Following result may be wrong.")
 
-  json=util.measure(wgw_host,wgw_port)
+  res=util.measure(wgw_host,wgw_port)
   # IRIS側から得た結果を表示。Countは保存した件数、Diffは保存にかかった時間(ミリ秒)
-  result=[json['SQLCODE'],json['Count'],json['Diff']] 
-  print(result)
+  ret=res['ret']
+  if ret==1:
+    result=[res['SQLCODE'],res['Count'],res['Diff']] 
+    print(result)
+  else:
+    print("Reset failed. Following result may be wrong. Error:"+res['msg'])
+    pprint.pprint(res['stack'].split(','))

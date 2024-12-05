@@ -15,6 +15,15 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 ClassMethod Reset(type As %String = "avro", datacount As %Integer = 0) As %Status
 {
     New $NAMESPACE
+    Set tSC=..DoReset(type,datacount)
+    do ..ConstructStatus(tSC).%ToJSON()
+    Return $$$OK
+}
+
+/// 直接メソッドとして呼ぶ場合のエントリ
+ClassMethod DoReset(type As %String = "avro", datacount As %Integer = 0) As %Status
+{
+    New $NAMESPACE
 
     try {
         k ^seq(type) 
@@ -27,8 +36,6 @@ ClassMethod Reset(type As %String = "avro", datacount As %Integer = 0) As %Statu
         Set sql="DELETE FROM MQTT.SimpleClass"
         Set result=##class(%SQL.Statement).%ExecDirect(,sql)
         $$$ThrowSQLIfError(result.%SQLCODE,result.%Message)
-        #;Set info={"SQLCODE":(result.%SQLCODE)}
-        #;do info.%ToJSON() w !
 
         Set tSC=##class(%SYS.Journal.File).PurgeAll()
         $$$ThrowOnError(tSC)
@@ -42,37 +49,57 @@ ClassMethod Reset(type As %String = "avro", datacount As %Integer = 0) As %Statu
     Catch (e) {
 	  Set tSC=e.AsStatus()
     }
-
-    return tSC
+    Return tSC
 }
 
 ClassMethod Measure() As %Status
 {
-    Set sql="SELECT count(*) cnt,{fn TIMESTAMPDIFF(SQL_TSI_FRAC_SECOND,MIN(ReceiveTS),MAX(ReceiveTS))} diff FROM MQTT.SimpleClass"
-    Set result=##class(%SQL.Statement).%ExecDirect(,sql)
-    Do result.%Next()
+    Try {
+        Set sql="SELECT count(*) cnt,{fn TIMESTAMPDIFF(SQL_TSI_FRAC_SECOND,MIN(ReceiveTS),MAX(ReceiveTS))} diff FROM MQTT.SimpleClass"
+        Set result=##class(%SQL.Statement).%ExecDirect(,sql)
+        $$$ThrowSQLIfError(result.%SQLCODE,result.%Message)
+        Do result.%Next()
 
-    Set info={"SQLCODE":(result.%SQLCODE),"Count":(result.cnt),"Diff":(result.diff)}
-	write info.%ToJSON()
-    return $$$OK
+        Set info={"ret":1,"SQLCODE":(result.%SQLCODE),"Count":(result.cnt),"Diff":(result.diff)}
+        do info.%ToJSON()
+    }
+    Catch (e) {
+	  Set tSC=e.AsStatus()
+      do ..ConstructStatus(tSC).%ToJSON()
+    }
+    Return $$$OK
 }
 
 ClassMethod Wait(event As %String = "NotifyAVRO", waittime As %Integer = 60) As %Status
 {
-    set ret=0
-    Set result = $SYSTEM.Event.WaitMsg(event,waittime)
-    Set resultCode=$LG(result,1)
-    #; something bad happened
-    If resultCode<1 {
-        w {"ret":0}.%ToJSON(),!
+    Try {
+        set ret=0
+        Set lResult = $SYSTEM.Event.WaitMsg(event,waittime)
+        Set resultCode=$LG(lResult,1)
+        #; something bad happened
+        If resultCode<1 {
+            w {"ret":0}.%ToJSON(),!
+        }
+        Else {
+            Set resultJson={}.%FromJSON($LG(lResult,2))
+            Set tCode=$SYSTEM.Event.Signal(resultJson.PID)
+            w {"ret":(tCode)}.%ToJSON(),!
+        }
     }
-    Else {
-        Set resultJson={}.%FromJSON($LG(result,2))
-        Do $SYSTEM.Event.Signal(resultJson.PID)
-        w {"ret":(resultJson.ret)}.%ToJSON(),!
+    Catch (e) {
+	  Set tSC=e.AsStatus()
+      do ..ConstructStatus(tSC).%ToJSON()
     }
 
     Return $$$OK
+}
+
+ClassMethod ConstructStatus(sc As %String) As %String
+{
+    d $SYSTEM.Status.DecomposeStatus(sc,.e) 
+    Set stack="" If $D(e(1,"stack")) { Set stack=$LISTTOSTRING(e(1,"stack")) }
+    Set info={"ret":(+sc),"msg":($SYSTEM.Status.GetErrorText(sc)),"stack":(stack)}
+    Return info
 }
 
 }

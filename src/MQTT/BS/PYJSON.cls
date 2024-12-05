@@ -20,7 +20,7 @@ Method OnProcessInput(pInput As EnsLib.MQTT.Message, pOutput As %RegisteredObjec
 
 		#; Bench実行時の待ち合わせ処理。^seqtarget("json")の有無がBench実行中か否かのフラグを兼ねる。
 		if ^seq("json")=$G(^seqtarget("json")) {
-			Do $SYSTEM.Event.Signal("NotifyJSON",{"PID":($JOB),"ret":1}.%ToJSON())
+			Do $SYSTEM.Event.Signal("NotifyJSON",{"PID":($JOB)}.%ToJSON())
 			$$$LOGINFO("target count reached. Count:"_^seq("json"))
 			Set res = $SYSTEM.Event.Wait("",10) ; Wait acknowledgement
 			If res < 1 {

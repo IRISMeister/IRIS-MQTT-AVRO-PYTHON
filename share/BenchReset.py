@@ -12,6 +12,6 @@ if __name__ == '__main__':
 
 	import iris
 	iris.system.Process.SetNamespace('AVRO')
-	retcode = iris.cls('MQTT.Dispatcher').Reset()
+	retcode = iris.cls('MQTT.Dispatcher').DoReset()
 	if (retcode!=1):
 		print("Fatal Error.")

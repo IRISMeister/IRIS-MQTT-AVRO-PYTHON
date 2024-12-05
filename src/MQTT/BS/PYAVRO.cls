@@ -20,7 +20,7 @@ Method OnProcessInput(pInput As EnsLib.MQTT.Message, pOutput As %RegisteredObjec
 
 		#; Bench実行時の待ち合わせ処理。^seqtarget("avro")の有無がBench実行中か否かのフラグを兼ねる。
 		if ^seq("avro")=$G(^seqtarget("avro")) {
-			Do $SYSTEM.Event.Signal("NotifyAVRO",{"PID":($JOB),"ret":1}.%ToJSON())
+			Do $SYSTEM.Event.Signal("NotifyAVRO",{"PID":($JOB)}.%ToJSON())
 			$$$LOGINFO("target count reached. Count:"_^seq("avro"))
 			Set res = $SYSTEM.Event.Wait("",10) ; Wait acknowledgement
 			If res < 1 {
