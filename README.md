@@ -99,7 +99,7 @@ $ docker compose exec iris mosquitto_sub -v -h mqttbroker -p 1883 -t /XGH/PYJSON
 [BinaryEncoder.py](share/BinaryEncoder.py)は[Binary.avsc](share/Binary.avsc)を使用してavroエンコードされたファイル(Binary.avro)を作成します。  
 [BinaryEncoderNoSchema.py](share/BinaryEncoderNoSchema.py)は[Binary.avsc](share/Binary.avsc)を使用してavroエンコードされたスキーマ無しのファイル(BinaryNoSchema.avro)を作成します。  
 [SimpleClassEncoder.py](share/SimpleClassEncoder.py)は[SimpleClass.avsc](share/SimpleClass.avsc)を使用してavroエンコードされたファイル(SimpleClass.avro)を作成します。  
-[CompareSize.py](share/CompareSize.py)は、[SimpleClass.avsc](share/SimpleClass.avsc)を使用してavroエンコードされたファイル(compare.avro)および比較用のJSONファイル(compare.json)を作成します。  
+[CompareSize.py](share/CompareSize.py)は、[SimpleClass.avsc](share/SimpleClass.avsc)を使用してavroエンコードされたファイル(compare.avro)および比較用のJSONファイル(compare.json)を作成します。AVROとJSONとの比較ではこのファイルを使用します。  
 
 - 実行方法
 ```
@@ -109,6 +109,7 @@ irisowner@iris:/share$ python3 BinaryEncoder.py
 irisowner@iris:/share$ python3 BinaryEncoderNoSchema.py
 irisowner@iris:/share$ python3 SimpleClassEncoder.py
 irisowner@iris:/share$ python3 CompareSize.py
+irisowner@iris:/share$ python3 CompareSize.py 10   <==引数に数値を与えると(省略時は1)、その数だけ単一ファイルにレコード(内容は全部同じ)を含めます
 ```
 
 # 送信用の(バイナリ)ファイルをデコードする
