@@ -197,7 +197,7 @@ SELECT count(*),{fn TIMESTAMPDIFF(SQL_TSI_FRAC_SECOND,MIN(ReceiveTS),MAX(Receive
 
 - AVROを指定回数だけ送信します。出力は[SQLCODE,レコード件数, (最後にINSERTした時刻-最初にINSERTした時刻)ミリ秒]
 ```
-$ docker compose exec iris python3 /share/Pub-AVRO.py --wgw_host iris --wgw_port 52773 --broker_host mqttbroker --data_count 3000
+$ docker compose exec iris python3 /share/Pub-AVRO.py --wgw_host iris --wgw_port 52773 --broker_host mqttbroker --repeat_count 3000
 [0,3000,3439]
 ```
 Pub-AVRO.py内から、「IRISを初期状態に戻す」処理を行っているので、繰り返し実行してもレコード件数は常に同じ値になります。
@@ -209,7 +209,7 @@ select count(*) from MQTT.SimpleClass
 
 - JSONを指定回数だけ送信します。
 ```
-$ docker compose exec iris python3 /share/Pub-JSON.py --wgw_host iris --wgw_port 52773 --broker_host mqttbroker --data_count 3000
+$ docker compose exec iris python3 /share/Pub-JSON.py --wgw_host iris --wgw_port 52773 --broker_host mqttbroker --repeat_count 3000
 [0,3000,3529]
 ```
 

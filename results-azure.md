@@ -65,7 +65,7 @@ sudo apt install -y mosquitto-clients python3-pip iperf3
 git clone https://github.com/IRISMeister/IRIS-MQTT-AVRO-PYTHON.git
 cd IRIS-MQTT-AVRO-PYTHON/share
 pip3 install -r requirments.txt
-python3 Pub-AVRO.py --data_count 1 --broker_host linux1 --wgw_host linux1  <=疎通確認
+python3 Pub-AVRO.py --repeat_count 1 --broker_host linux1 --wgw_host linux1  <=疎通確認
 [0, 1, 0]
 ```
 
@@ -238,7 +238,7 @@ rtt min/avg/max/mdev = 0.762/0.969/1.171/0.138 ms
 - AVRO
 
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,2948]
 [0,5000,3007]
 [0,5000,2970]
@@ -273,7 +273,7 @@ azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pu
 
 - JSON
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,3188]
 [0,5000,3197]
 [0,5000,3194]
@@ -324,7 +324,7 @@ iperf3 -c linux1 -N -t 7200 -P 128 -R -l 512K -p 5202
 
 - AVRO
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,12904]
 [0,5000,11221]
 [0,5000,9649]
@@ -359,7 +359,7 @@ azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pu
 
 - JSON
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,13615]
 [0,5000,11309]
 [0,5000,9889]
@@ -413,7 +413,7 @@ rtt min/avg/max/mdev = 0.708/0.817/0.927/0.086 ms
 
 - AVRO
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,3959]
 [0,5000,3079]
 [0,5000,3053]
@@ -448,7 +448,7 @@ azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pu
 
 - JSON
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,3232]
 [0,5000,3216]
 [0,5000,3266]
@@ -485,7 +485,7 @@ azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pu
 
 - AVRO
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-AVRO.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,17874]
 [0,5000,21135]
 [0,5000,17822]
@@ -520,7 +520,7 @@ azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pu
 
 - JSON
 ```
-azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --data_count 5000 --broker_host linux1 --wgw_host linux1; done
+azureuser@linux2:~/IRIS-MQTT-AVRO-PYTHON/share$ for i in {1..30} ; do python3 Pub-JSON.py --repeat_count 5000 --broker_host linux1 --wgw_host linux1; done
 [0,5000,25200]
 [0,5000,36733]
 [0,5000,33818]

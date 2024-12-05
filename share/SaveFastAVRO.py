@@ -25,16 +25,17 @@ def init(datadir):
 def saveFromString(seq,topic,byte_data):
 	import iris
 	bytes_reader = io.BytesIO(byte_data)
-	data = fastavro.schemaless_reader(bytes_reader, schema)
 
-	try: 
-		rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),data['myBytes'],data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
-	except Exception as ex:
-		if ex.sqlcode != 0:
-			print ('SQL error', ex.message, ex.sqlcode, ex.statement)
+	while bytes_reader.tell() < len(bytes_reader.getvalue()):
+		data = fastavro.schemaless_reader(bytes_reader, schema)
+		try: 
+			rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),data['myBytes'],data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
+		except Exception as ex:
+			if ex.sqlcode != 0:
+				print ('SQL error', ex.message, ex.sqlcode, ex.statement)
 
 	return 0
-# copy me in mgr\python\
+
 def save(seq,topic,datadir):
 	global decodeTime
 	global sqlTime
@@ -44,20 +45,25 @@ def save(seq,topic,datadir):
 	avrofile=datadir+'compare.avro'
 	fr = open(avrofile, 'rb')
 	byte_data = fr.read()	
-
 	bytes_reader = io.BytesIO(byte_data)
-	data = fastavro.schemaless_reader(bytes_reader, schema)
 	t = time.time() - start
 	decodeTime=decodeTime+t
 
-	start = time.time()
-	try: 
-		rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),data['myBytes'],data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
-	except Exception as ex:
-		if ex.sqlcode != 0:
-			print ('SQL error', ex.message, ex.sqlcode, ex.statement)
-	t = time.time() - start
-	sqlTime=sqlTime+t
+	while bytes_reader.tell() < len(bytes_reader.getvalue()):
+		start = time.time()
+		data = fastavro.schemaless_reader(bytes_reader, schema)
+		bytes_reader.tell()
+		t = time.time() - start
+		decodeTime=decodeTime+t
+
+		start = time.time()
+		try: 
+			rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),data['myBytes'],data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
+		except Exception as ex:
+			if ex.sqlcode != 0:
+				print ('SQL error', ex.message, ex.sqlcode, ex.statement)
+		t = time.time() - start
+		sqlTime=sqlTime+t
 
 	return 0
 

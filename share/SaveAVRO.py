@@ -15,7 +15,6 @@ def init(datadir):
 	sql = "INSERT INTO MQTT.SimpleClass (myArray, myBool, myBytes, myDouble, myFloat, myInt, myLong, myString,seq, topic) VALUES(?,?,?,?,?,?,?,?,?,?)"
 	stmt = iris.sql.prepare(sql)
 
-# copy me in mgr\python\
 def save(seq,topic,avromsg):
 	import iris
 

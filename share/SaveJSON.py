@@ -13,19 +13,18 @@ def saveFromString(seq,topic,byte_data):
 	import iris
 
 	json_str = byte_data.decode('utf-8')
-	data = json.loads(json_str)
-
-	myBytes=base64.b64decode(data['myBytes']).decode('utf-8')
-
-	try: 
-		rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),myBytes,data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
-	except Exception as ex:
-		if ex.sqlcode != 0:
-			print ('SQL error', ex.message, ex.sqlcode, ex.statement)
+	alldata = json.loads(json_str)
+	for seq in range(0,len(alldata)):
+		data=alldata[seq]
+		myBytes=base64.b64decode(data['myBytes']).decode('utf-8')
+		try: 
+			rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),myBytes,data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
+		except Exception as ex:
+			if ex.sqlcode != 0:
+				print ('SQL error', ex.message, ex.sqlcode, ex.statement)
 
 	return 0
 
-# copy me in mgr\python\
 def save(seq,topic,datadir):
 	global decodeTime
 	global sqlTime
@@ -37,20 +36,25 @@ def save(seq,topic,datadir):
 	byte_data = fr.read()
 
 	json_str = byte_data.decode('utf-8')
-	data = json.loads(json_str)
-
-	myBytes=base64.b64decode(data['myBytes']).decode('utf-8')
+	alldata = json.loads(json_str)
 	t = time.time() - start
 	decodeTime=decodeTime+t
 
-	start = time.time()
-	try: 
-		rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),myBytes,data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
-	except Exception as ex:
-		if ex.sqlcode != 0:
-			print ('SQL error', ex.message, ex.sqlcode, ex.statement)
-	t = time.time() - start
-	sqlTime=sqlTime+t
+	for seq in range(0,len(alldata)):
+		start = time.time()
+		data=alldata[seq]
+		myBytes=base64.b64decode(data['myBytes']).decode('utf-8')
+		t = time.time() - start
+		decodeTime=decodeTime+t
+
+		start = time.time()
+		try: 
+			rs=stmt.execute(json.dumps(data['myArray']),int(data['myBool']),myBytes,data['myDouble'],data['myFloat'],data['myInt'],data['myLong'],data['myString'],seq,topic)
+		except Exception as ex:
+			if ex.sqlcode != 0:
+				print ('SQL error', ex.message, ex.sqlcode, ex.statement)
+		t = time.time() - start
+		sqlTime=sqlTime+t
 
 	return 0
 

@@ -10,8 +10,8 @@ def measure(target_host,wgw_port):
     res = requests.post(url)
     return res.json()
 
-def reset(dataformat,target_host,wgw_port,data_count):
-    url = 'http://'+target_host+':'+wgw_port+'/csp/mqtt/rest/reset/'+dataformat+'/'+str(data_count)
+def reset(dataformat,target_host,wgw_port,repeat_count):
+    url = 'http://'+target_host+':'+wgw_port+'/csp/mqtt/rest/reset/'+dataformat+'/'+str(repeat_count)
     res = requests.post(url)
     return res.json()
 

@@ -15,16 +15,16 @@ if __name__ == '__main__':
   parser.add_argument('--wgw_host',default='localhost')
   parser.add_argument('--wgw_port',type=int,default=8882)
   parser.add_argument('--broker_host',default='localhost')
-  parser.add_argument('--data_count',type=int,default=1)
+  parser.add_argument('--repeat_count',type=int,default=1)
   args = parser.parse_args()
 
   broker_host=args.broker_host
-  data_count=args.data_count
+  repeat_count=args.repeat_count
   wgw_host=args.wgw_host
   wgw_port=str(args.wgw_port)
 
   # IRISのテーブルを全件削除, 送信件数の通知
-  res = util.reset('json',wgw_host,wgw_port,data_count)
+  res = util.reset('json',wgw_host,wgw_port,repeat_count)
   ret = res['ret']
   if ret!=1:
     print("Reset failed. Following result may be wrong. Error:"+res['msg'])
@@ -39,14 +39,14 @@ if __name__ == '__main__':
 
   client.loop_start()
 
-  for seq in range (0,data_count):
+  for seq in range (0,repeat_count):
     msginfo=client.publish("/XGH/PYJSON/"+str(seq),byte_data,1)
 
   client.loop_stop()
 
   # 送信側のMQTT Clientで、IRIS(受信側のMQTT Client)が全件取得したことを知る簡単な方法が無い。
   # $SYSTEM.Eventを使用して待ち合わせする。
-  # waittime(秒)を、対象件数(data_count)がINSERT完了し終わるまでにかかる想定時間より長く設定すること。
+  # waittime(秒)を、対象件数(repeat_count)がINSERT完了し終わるまでにかかる想定時間より長く設定すること。
   # あまり長く設定しすぎると、異常を検知するまでに時間がかかる。
   waittime=60  
   res=util.wait('NotifyJSON',wgw_host,wgw_port,waittime)

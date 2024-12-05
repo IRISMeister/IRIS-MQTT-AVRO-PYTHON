@@ -1,10 +1,17 @@
-import io,os
+import io
+import sys
 import avro.schema
 import avro.io
 import json
 import base64
 import random
 
+record_count=1 #単一ファイルに含めるレコードの数
+args = sys.argv
+if 2 <= len(args):
+  if args[1].isdigit():
+    record_count=int(args[1])
+                    
 schema = avro.schema.parse(open('SimpleClass.avsc', 'rb').read())
 
 writer = avro.io.DatumWriter(schema)
@@ -24,14 +31,17 @@ data = {'myInt': 1, 'myLong': 2, 'myBool': True, 'myDouble': 3.14, 'myFloat': 0.
 writer.write(data,encoder)
 
 raw_bytes = bytes_writer.getvalue()
-print(len(raw_bytes))
-print(type(raw_bytes))
 
 f = open('compare.avro', 'wb')
-f.write(raw_bytes)
+for k in range(record_count):
+  f.write(raw_bytes)
 f.close()
 
 data['myBytes']=base64.b64encode(data['myBytes']).decode('ascii')
 with open('compare.json', 'w') as f:
-    json.dump(data,f)
+    f.write('[')
+    for k in range(record_count):
+       json.dump(data,f)
+       if k!=(record_count-1): f.write(',')
+    f.write(']')
 
