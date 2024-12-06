@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8882:52773
-      - 8883:1972
+      #- 1972:1972
     environment:
       - TZ=JST-9
       - ISC_DATA_DIRECTORY=/iris-mgr/data
@@ -49,3 +49,14 @@ services:
 #      - 8084:8084
 #      - 8883:8883
 #      - 18083:18083
+
+#  mqttbroker:
+#    image: emqx/nanomq
+#    hostname: mqttbroker
+#    restart: on-failure
+#    ports:
+#      - 1883:1883
+#      - 8083:8083
+#      - 8883:8883
+#    volumes:
+#      - ./MQTTBroker/nanomq/nanomq.conf:/etc/nanomq.conf
